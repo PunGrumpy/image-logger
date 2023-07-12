@@ -1,0 +1,12 @@
+# Enviroment
+.env*
+
+# Logs
+*.log
+
+# Node
+node_modules
+
+# Config
+config.json
+assets/

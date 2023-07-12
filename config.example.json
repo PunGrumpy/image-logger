@@ -1,0 +1,9 @@
+{
+  "webhooks": [
+    {
+      "name": "NAME OF WEBHOOK",
+      "url": "URL OF WEBHOOK"
+    }
+  ],
+  "directory": "DIRECTORY TO IMAGE"
+}

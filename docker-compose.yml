@@ -1,0 +1,12 @@
+version: '3'
+services:
+  api:
+    container_name: Image Logger API 🖼️
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    command: cd node_modules/geoip-lite && pnpm run-script updatedb license_key=GEOIP
+    ports:
+      - 3000:3000

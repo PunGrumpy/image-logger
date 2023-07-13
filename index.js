@@ -186,39 +186,55 @@ app.get('/image/:imageName', (req, res) => {
     try {
       // Get client IP
       const clientIP =
-        req.headers['x-forwarded-for'] || req.connection.remoteAddress
+        req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress ||
+        'not found'
 
-      // Get client's information
-      const ipInfo = geoip.lookup(clientIP)
-      let { timezone, country, city, ll } = ipInfo
-
-      if (!timezone) {
-        timezone = 'not found'
-      }
-      if (!country) {
-        country = 'not found'
-      }
-      if (!city) {
-        city = 'not found'
-      }
-      if (!ll) {
-        ll = 'not found'
+      if (clientIP === '::1') {
+        clientIP = '0.0.0.0'
       }
 
-      logger.info(
-        `Client IP: ${clientIP}, Timezone: ${timezone}, Country: ${country}, City: ${city}, Coordinates: ${ll}`
-      )
+      if (clientIP.substr(0, 7) === '::ffff:') {
+        clientIP = clientIP.substr(7)
+      }
 
-      // Send the image to the webhooks
-      sendImageToWebhooks(
-        imageName,
-        imageUrl,
-        clientIP,
-        timezone,
-        country,
-        city,
-        ll
-      )
+      if (clientIP !== 'not found') {
+        // Get client's information
+        const ipInfo = geoip.lookup(clientIP)
+        let { timezone, country, city, ll } = ipInfo
+
+        if (!timezone) {
+          timezone = 'not found'
+        }
+        if (!country) {
+          country = 'not found'
+        }
+        if (!city) {
+          city = 'not found'
+        }
+        if (!ll) {
+          ll = 'not found'
+        }
+
+        logger.info(
+          `Client IP: ${clientIP}, Timezone: ${timezone}, Country: ${country}, City: ${city}, Coordinates: ${ll}`
+        )
+
+        // Send the image to the webhooks
+        sendImageToWebhooks(
+          imageName,
+          imageUrl,
+          clientIP,
+          timezone,
+          country,
+          city,
+          ll
+        )
+      } else {
+        logger.error('Client IP not found')
+      }
     } catch (error) {
       logger.error(`Error sending image to webhooks: ${error}`)
     }

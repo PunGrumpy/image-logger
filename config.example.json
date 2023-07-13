@@ -5,5 +5,14 @@
       "url": "URL OF WEBHOOK"
     }
   ],
-  "directory": "DIRECTORY TO IMAGE"
+  "image": [
+    {
+      "name": "NAME OF IMAGE",
+      "url": "URL OF IMAGE or PATH TO IMAGE"
+    },
+    {
+      "name": "NAME OF IMAGE",
+      "url": "URL OF IMAGE or PATH TO IMAGE"
+    }
+  ]
 }

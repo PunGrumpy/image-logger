@@ -30,13 +30,32 @@ Create a `config.json` you can use the `config.example.json` as a template.
       "url": "URL OF WEBHOOK"
     }
   ],
-  "directory": "DIRECTORY TO IMAGE"
+  "image": [
+    {
+      "name": "NAME OF IMAGE",
+      "url": "URL OF IMAGE or PATH TO IMAGE"
+    },
+    {
+      "name": "NAME OF IMAGE",
+      "url": "URL OF IMAGE or PATH TO IMAGE"
+    }
+  ]
 }
 ```
 
 ### 🚀 Starting
 
+### 🐳 Docker
+
 ```bash
+# Edit the config.json and Dockerfile
+docker compose up -d
+```
+
+### 🖥️ Local
+
+```bash
+# Edit the config.json
 pnpm start
 ```
 

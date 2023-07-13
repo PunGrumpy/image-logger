@@ -85,7 +85,6 @@ const sendImageToWebhooks = (
         }
       ])
       .setThumbnail(`attachment://${imageName}`)
-      .setImages([new AttachmentBuilder(imageUrl, imageName)])
       .setColor(randomWebhookColor)
       .setTimestamp()
 

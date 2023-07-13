@@ -11,3 +11,4 @@ services:
       - ./index.js:/home/node/index.js
       - ./package.json:/home/node/package.json
       - ./config.json:/home/node/config.json
+      - ./assets/*:/home/node/assets/*

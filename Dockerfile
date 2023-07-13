@@ -1,7 +1,5 @@
 FROM node:20.4.0 AS build
 
-ENV GEOIP=YOUR_LICENSE_KEY
-
 WORKDIR /home/node
 
 COPY package.json pnpm-lock.yaml ./
@@ -13,10 +11,6 @@ USER node
 RUN pnpm install
 
 COPY . .
-
-WORKDIR /home/node/node_modules/geoip-lite
-
-RUN pnpm run-script updatedb license_key=${GEOIP}
 
 WORKDIR /home/node
 

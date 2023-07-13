@@ -202,8 +202,12 @@ app.get('/image/:imageName', (req, res) => {
 
       if (clientIP !== 'not found') {
         // Get client's information
-        const ipInfo = geoip.lookup(clientIP)
-        let { timezone, country, city, ll } = ipInfo
+        try {
+          const ipInfo = geoip.lookup(clientIP)
+          let { timezone, country, city, ll } = ipInfo
+        } catch (error) {
+          pass
+        }
 
         if (!timezone) {
           timezone = 'not found'

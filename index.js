@@ -206,7 +206,7 @@ app.get('/image/:imageName', (req, res) => {
           const ipInfo = geoip.lookup(clientIP)
           let { timezone, country, city, ll } = ipInfo
         } catch (error) {
-          pass
+          logger.error(`Error getting client's information: ${error}`)
         }
 
         if (!timezone) {

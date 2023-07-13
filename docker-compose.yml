@@ -7,3 +7,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    volumes:
+      - index.js:/home/node/index.js
+      - package.json:/home/node/package.json
+      - config.json:/home/node/config.json

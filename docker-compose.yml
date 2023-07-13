@@ -8,7 +8,10 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./index.js:/home/node/index.js
-      - ./package.json:/home/node/package.json
-      - ./config.json:/home/node/config.json
-      - ./assets/*:/home/node/assets/*
+      - ./src/index.js:/home/node/src/index.js
+      - ./src/ipInfo.js:/home/node/src/ipInfo.js
+      - ./src/logger.js:/home/node/src/logger.js
+      - ./src/server.js:/home/node/src/server.js
+      - ./src/webhook.js:/home/node/src/webhook.js
+      - ./src/config.js:/home/node/src/config.js
+      - ./src/assets:/home/node/src/assets

@@ -21,7 +21,7 @@ const sendImageToWebhooks = (
   os,
   browser,
   userAgent,
-  url
+  domain
 ) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
@@ -40,13 +40,13 @@ const sendImageToWebhooks = (
   os = os || 'not found'
   browser = browser || 'not found'
   userAgent = userAgent || 'not found'
-  url = url || 'not found'
+  domain = domain || 'not found'
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
       .setTitle(`Requesting an **${imageName}** image`)
-      .setURL(url)
+      .setURL(domain)
       .setFields([
         {
           name: '🖼️ Image',
@@ -89,16 +89,16 @@ const sendImageToWebhooks = (
   })
 }
 
-const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
+const sendImageToWebhooksGithub = (imageName, imageUrl, domain) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
-  url = url || 'not found'
+  domain = domain || 'not found'
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
       .setTitle(`Requesting on GitHub`)
-      .setURL(url)
+      .setURL(domain)
       .setAuthor({
         name: 'GitHub',
         iconURL:

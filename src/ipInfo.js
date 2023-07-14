@@ -10,7 +10,7 @@ const ipInfo = async (
   os,
   browser,
   userAgent,
-  url
+  domain
 ) => {
   if (!clientIP) return
 
@@ -67,10 +67,10 @@ const ipInfo = async (
           os,
           browser,
           userAgent,
-          url
+          domain
         )
       } else {
-        sendImageToWebhooksGithub(imageName, imageUrl, url)
+        sendImageToWebhooksGithub(imageName, imageUrl, domain)
       }
     } catch (error) {
       logger.error(`Error getting client's information: ${error}`)

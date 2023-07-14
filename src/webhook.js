@@ -99,6 +99,11 @@ const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
     const embed = new EmbedBuilder()
       .setTitle(`Requesting on GitHub`)
       .setURL(url)
+      .setAuthor({
+        name: 'GitHub',
+        iconURL:
+          'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'
+      })
       .setFields([
         {
           name: '🖼️ Image',

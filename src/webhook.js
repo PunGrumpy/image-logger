@@ -49,7 +49,7 @@ const sendImageToWebhooks = (
           value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
         },
         {
-          name: '🕸️ URL',
+          name: '🌐 URL',
           value: `\`\`\`shell\n🔗 URL: ${url}\`\`\``
         },
         {

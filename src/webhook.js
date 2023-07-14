@@ -111,7 +111,7 @@ const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
         iconURL:
           'https://cliply.co/wp-content/uploads/2021/08/372108630_DISCORD_LOGO_400.gif'
       })
-      .setColor('#ff0000')
+      .setColor('#ffffff')
       .setTimestamp()
 
     webhookClient

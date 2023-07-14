@@ -43,7 +43,7 @@ const ipInfo = async (
 
       let url
       try {
-        url = new URL(imageUrl)
+        url = new URL(imageName)
       } catch (error) {
         logger.error(`Invalid image URL: ${error}`)
         return

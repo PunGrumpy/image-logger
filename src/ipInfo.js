@@ -1,4 +1,3 @@
-const path = require('path')
 const logger = require('./logger')
 const { sendImageToWebhooks, sendImageToWebhooksGithub } = require('./webhook')
 
@@ -10,7 +9,8 @@ const ipInfo = async (
   imageUrl,
   os,
   browser,
-  userAgent
+  userAgent,
+  url
 ) => {
   if (!clientIP) return
 
@@ -41,17 +41,6 @@ const ipInfo = async (
         hosting
       } = infoJson
 
-      let url
-      try {
-        const absoluteImagePath = new URL(imageUrl, location.href).href
-        url = new URL(absoluteImagePath)
-      } catch (error) {
-        logger.error(`Invalid image URL: ${error}`)
-        return
-      }
-
-      const domain = url.hostname
-
       logger.info(
         `Client's information: Country: ${country}, Region: ${regionName}, City: ${city}, Coordinates: ${lat}, ${lon}, Timezone: ${timezone}, ISP: ${isp}, AS: ${as}, Mobile: ${mobile}, Proxy: ${proxy}, Hosting: ${hosting}`
       )
@@ -63,7 +52,6 @@ const ipInfo = async (
         sendImageToWebhooks(
           imageName,
           imageUrl,
-          domain,
           clientIP,
           timezone,
           country,
@@ -78,10 +66,11 @@ const ipInfo = async (
           hosting,
           os,
           browser,
-          userAgent
+          userAgent,
+          url
         )
       } else {
-        sendImageToWebhooksGithub(imageName, imageUrl, domain)
+        sendImageToWebhooksGithub(imageName, imageUrl, url)
       }
     } catch (error) {
       logger.error(`Error getting client's information: ${error}`)

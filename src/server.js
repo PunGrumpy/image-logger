@@ -102,8 +102,9 @@ app.get('/image/:imageName', (req, res) => {
       const result = parser.setUA(userAgent).getResult()
       const os = result.os.name || 'not found'
       const browser = result.browser.name || 'not found'
+      const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`
 
-      ipInfo(clientIP, imageName, imageUrl, os, browser, userAgent)
+      ipInfo(clientIP, imageName, imageUrl, os, browser, userAgent, url)
     } catch (error) {
       logger.error(`Error getting client's IP: ${error}`)
     }

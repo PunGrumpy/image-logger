@@ -43,24 +43,27 @@ const ipInfo = async (
 
       let url
       try {
-        const scriptPath = path.dirname(__filename)
-        const absoluteImagePath = path.join(scriptPath, imageUrl)
-        const fileUrl = `file://${absoluteImagePath}`
-        url = new URL(fileUrl)
+        const absoluteImagePath = new URL(imageUrl, location.href).href
+        url = new URL(absoluteImagePath)
       } catch (error) {
         logger.error(`Invalid image URL: ${error}`)
         return
       }
 
+      const domain = url.hostname
+
       logger.info(
         `Client's information: Country: ${country}, Region: ${regionName}, City: ${city}, Coordinates: ${lat}, ${lon}, Timezone: ${timezone}, ISP: ${isp}, AS: ${as}, Mobile: ${mobile}, Proxy: ${proxy}, Hosting: ${hosting}`
       )
 
-      if (userAgent !== 'github-camo' && userAgent !== 'github.com') {
+      if (
+        !userAgent.includes('github-camo') &&
+        !userAgent.includes('github.com')
+      ) {
         sendImageToWebhooks(
           imageName,
           imageUrl,
-          url,
+          domain,
           clientIP,
           timezone,
           country,
@@ -78,7 +81,7 @@ const ipInfo = async (
           userAgent
         )
       } else {
-        sendImageToWebhooksGithub(imageName, imageUrl, url)
+        sendImageToWebhooksGithub(imageName, imageUrl, domain)
       }
     } catch (error) {
       logger.error(`Error getting client's information: ${error}`)

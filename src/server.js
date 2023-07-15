@@ -53,7 +53,6 @@ app.get('/image/:imageName', (req, res) => {
 
   if (image) {
     const imageUrl = image.path
-    const imageType = image.path.startsWith('http') ? 'url' : 'path'
 
     logger.info(`Image requested: ${imageUrl}`)
 

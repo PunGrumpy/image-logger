@@ -33,11 +33,11 @@ Create a `config.json` you can use the `config.example.json` as a template.
   "image": [
     {
       "name": "NAME OF IMAGE",
-      "path": "URL OF IMAGE or PATH TO IMAGE"
+      "path": "URL OF IMAGE"
     },
     {
       "name": "NAME OF IMAGE",
-      "path": "URL OF IMAGE or PATH TO IMAGE"
+      "path": "URL OF IMAGE
     }
   ]
 }

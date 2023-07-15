@@ -1,8 +1,6 @@
 const logger = require('./logger')
 const { sendImageToWebhooks, sendImageToWebhooksGithub } = require('./webhook')
 
-const config = require('./config.json')
-
 const ipInfo = async (
   clientIP,
   imageName,

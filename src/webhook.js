@@ -1,5 +1,5 @@
-const { WebhookClient, EmbedBuilder } = require('discord.js')
 const logger = require('./logger')
+const { WebhookClient, EmbedBuilder } = require('discord.js')
 
 const config = require('./config.json')
 

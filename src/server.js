@@ -52,38 +52,19 @@ app.get('/image/:imageName', (req, res) => {
   const image = config.images.find(img => img.name === imageName)
 
   if (image) {
-    const imageUrl = image.path.startsWith('http')
-      ? image.path
-      : `${req.protocol}://${req.get('host')}/image/${image.path}`
-    const imageType = image.path.startsWith('http') ? 'url' : 'path'
+    const imageUrl = image.path
 
     logger.info(`Image requested: ${imageUrl}`)
 
     res.setHeader('Content-Type', 'image/png')
 
-    if (imageType === 'path') {
-      const imagePath = `${__dirname}/${image.path}`
-
-      res.sendFile(
-        imagePath,
-        { headers: { 'Content-Type': 'image/png' } },
-        error => {
-          if (error) {
-            logger.error(`Error sending image: ${error}`)
-          } else {
-            logger.info(`Image ${imageName} sent to the client`)
-          }
-        }
-      )
-    } else {
-      request
-        .get(imageUrl)
-        .on('error', error => {
-          logger.error(`Error fetching image: ${error}`)
-          res.status(500).json({ message: 'Error fetching image' })
-        })
-        .pipe(res)
-    }
+    request
+      .get(imageUrl)
+      .on('error', error => {
+        logger.error(`Error fetching image: ${error}`)
+        res.status(500).json({ message: 'Error fetching image' })
+      })
+      .pipe(res)
 
     try {
       const clientIP =

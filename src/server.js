@@ -52,7 +52,10 @@ app.get('/image/:imageName', (req, res) => {
   const image = config.images.find(img => img.name === imageName)
 
   if (image) {
-    const imageUrl = image.path
+    const imageUrl =
+      image.path && image.path.startsWith('http')
+        ? image.path
+        : `${req.protocol}://${req.get('host')}/image/${image.path}`
     const imageType =
       image.path && image.path.startsWith('http') ? 'url' : 'path'
 
@@ -61,19 +64,22 @@ app.get('/image/:imageName', (req, res) => {
     res.setHeader('Content-Type', 'image/png')
 
     if (imageType === 'path') {
-      const imagePath = `${__dirname}/${image.path}`
+      const imagePath = path.join(__dirname, 'assets', `${image.path}`)
 
-      res.sendFile(
-        imagePath,
-        { headers: { 'Content-Type': 'image/png' } },
-        error => {
-          if (error) {
-            logger.error(`Error sending image: ${error}`)
-          } else {
-            logger.info(`Image ${imageName} sent to the client`)
-          }
+      fs.access(imagePath, fs.constants.R_OK, err => {
+        if (err) {
+          logger.error(`Error accessing image: ${err}`)
+          res.status(500).json({ message: 'Error accessing image' })
+        } else {
+          res.sendFile(imagePath, error => {
+            if (error) {
+              logger.error(`Error sending image: ${error}`)
+            } else {
+              logger.info(`Image ${imageName} sent to the client`)
+            }
+          })
         }
-      )
+      })
     } else {
       request
         .get(imageUrl)

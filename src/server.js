@@ -51,7 +51,7 @@ app.get('/image/:imageName', (req, res) => {
   const { imageName } = req.params
   const image = config.images.find(img => img.name === imageName)
 
-  if (image) {
+  if (image && image.path) {
     const imageUrl =
       image.path && image.path.startsWith('http')
         ? image.path
@@ -64,7 +64,7 @@ app.get('/image/:imageName', (req, res) => {
     res.setHeader('Content-Type', 'image/png')
 
     if (imageType === 'path') {
-      const imagePath = path.join(__dirname, 'assets', `${image.path}`)
+      const imagePath = path.join(__dirname, 'assets', image.path)
 
       fs.access(imagePath, fs.constants.R_OK, err => {
         if (err) {

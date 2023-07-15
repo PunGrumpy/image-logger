@@ -4,7 +4,6 @@
   "description": "Logging via API of images and sending to Discord webhook",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "healthcheck": "node healthcheck.js"
   },

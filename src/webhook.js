@@ -42,10 +42,8 @@ const sendImageToWebhooks = (
   userAgent = userAgent || 'not found'
   domain = domain || 'not found'
 
-  const webhookUrl = webhook.url || process.env.WEBHOOK_URL
-
   config.webhooks.forEach(webhook => {
-    const webhookClient = new WebhookClient({ url: webhookUrl })
+    const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
       .setTitle(`Requesting an **${imageName}** image`)
       .setURL(domain)

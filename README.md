@@ -46,11 +46,10 @@ Create a `config.json` you can use the `config.example.json` as a template.
 You can also use `enviroment variables` to configure the project.
 
 ```env
-WEBHOOK_URL=URL OF WEBHOOK
 HEALTHCHECK_USER_AGENT=USER AGENT FOR HEALTHCHECK # Edit on Dockerfile
 ```
 
-> **Note**: You can add as webhooks url on `config.json` or using `enviroment variables`.
+> **Note**: You can add as webhooks url on `config.json` as you want.
 
 ### `🖼️` Preparing images
 

@@ -43,6 +43,10 @@ Create a `config.json` you can use the `config.example.json` as a template.
 }
 ```
 
+```env
+WEBHOOK_URL=URL OF WEBHOOK
+```
+
 > **Note**: You can add as webhooks url on `config.json` or using `enviroment variables`.
 
 ### `🖼️` Preparing images

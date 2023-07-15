@@ -52,10 +52,7 @@ app.get('/image/:imageName', (req, res) => {
   const image = config.images.find(img => img.name === imageName)
 
   if (image) {
-    const imageUrl =
-      image.path && image.path.startsWith('http')
-        ? image.path
-        : `${req.protocol}://${req.get('host')}/assets/${image.path}`
+    const imageUrl = image.path
     const imageType =
       image.path && image.path.startsWith('http') ? 'url' : 'path'
 

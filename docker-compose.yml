@@ -15,3 +15,4 @@ services:
       - ./src/webhook.js:/home/node/src/webhook.js
       - ./src/config.json:/home/node/src/config.js
       - ./src/assets/:/home/node/src/assets
+      - ./healthcheck.js:/home/node/healthcheck.js

@@ -1,38 +1,17 @@
+const fs = require('fs')
+const path = require('path')
+const request = require('request')
 const express = require('express')
 const ipInfo = require('./ipInfo')
 const logger = require('./logger')
 const { v4: uuidv4 } = require('uuid')
 const UAParser = require('ua-parser-js')
 const bodyParser = require('body-parser')
-const { createCanvas } = require('canvas')
 
 const config = require('./config.json')
 
-const canvas = createCanvas(1920, 1080)
-const ctx = canvas.getContext('2d')
-
-ctx.fillStyle = 'rgba(0, 0, 0, 0)'
-ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-const imageLogger = (imageData, imageName) => {
-  loadImage(imageData)
-    .then(image => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      ctx.fillStyle = 'rgba(0, 0, 0, 0)'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
-    })
-    .catch(error => {
-      logger.error(`Error loading image ${imageName}: ${error}`)
-    })
-}
-
 const app = express()
-
 app.enable('trust proxy')
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -73,22 +52,38 @@ app.get('/image/:imageName', (req, res) => {
   const image = config.images.find(img => img.name === imageName)
 
   if (image) {
-    const imageUrl = image.url
-    const imageName = `${image.name}.png`
+    const imageUrl = image.path.startsWith('http')
+      ? image.path
+      : `${req.protocol}://${req.get('host')}/image/${image.path}`
+    const imageType = image.path.startsWith('http') ? 'url' : 'path'
 
     logger.info(`Image requested: ${imageUrl}`)
 
-    res.sendFile(
-      imageUrl,
-      { root: __dirname, headers: { 'Content-Type': 'image/png' } },
-      error => {
-        if (error) {
-          logger.error(`Error sending image: ${error}`)
-        } else {
-          logger.info(`Image ${imageName} sent to the client`)
+    res.setHeader('Content-Type', 'image/png')
+
+    if (imageType === 'path') {
+      const imagePath = `${__dirname}/${image.path}`
+
+      res.sendFile(
+        imagePath,
+        { headers: { 'Content-Type': 'image/png' } },
+        error => {
+          if (error) {
+            logger.error(`Error sending image: ${error}`)
+          } else {
+            logger.info(`Image ${imageName} sent to the client`)
+          }
         }
-      }
-    )
+      )
+    } else {
+      request
+        .get(imageUrl)
+        .on('error', error => {
+          logger.error(`Error fetching image: ${error}`)
+          res.status(500).json({ message: 'Error fetching image' })
+        })
+        .pipe(res)
+    }
 
     try {
       const clientIP =
@@ -113,13 +108,33 @@ app.get('/image/:imageName', (req, res) => {
   }
 })
 
-app.post('/upload', (req, res) => {
-  const imageData = req.body
-  const imageName = `${uuidv4()}.png`
+app.post('/image', (req, res) => {
+  const { image, imageName } = req.body
 
-  imageLogger(imageData, imageName)
+  if (image) {
+    const finalImageName = imageName || uuidv4()
+    const imagePath = path.join(__dirname, 'assets', `${finalImageName}.png`)
 
-  res.status(200).json({ message: 'Image uploaded' })
+    fs.mkdirSync(path.join(__dirname, 'assets'), { recursive: true })
+
+    if (fs.existsSync(imagePath)) {
+      return res.status(400).json({ message: 'Image name already exists' })
+    }
+
+    request
+      .get(image)
+      .on('error', error => {
+        logger.error(`Error fetching image: ${error}`)
+        res.status(500).json({ message: 'Error fetching image' })
+      })
+      .pipe(fs.createWriteStream(imagePath))
+      .on('close', () => {
+        logger.info(`Image ${finalImageName} saved`)
+        res.status(200).json({ message: 'Image saved' })
+      })
+  } else {
+    res.status(400).json({ message: 'No image provided' })
+  }
 })
 
 module.exports = app

@@ -8,11 +8,11 @@
   "image": [
     {
       "name": "NAME OF IMAGE",
-      "url": "URL OF IMAGE or PATH TO IMAGE"
+      "path": "URL OF IMAGE or PATH TO IMAGE"
     },
     {
       "name": "NAME OF IMAGE",
-      "url": "URL OF IMAGE or PATH TO IMAGE"
+      "path": "URL OF IMAGE or PATH TO IMAGE"
     }
   ]
 }

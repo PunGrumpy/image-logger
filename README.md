@@ -33,28 +33,42 @@ Create a `config.json` you can use the `config.example.json` as a template.
   "image": [
     {
       "name": "NAME OF IMAGE",
-      "url": "URL OF IMAGE or PATH TO IMAGE"
+      "path": "URL OF IMAGE or PATH TO IMAGE"
     },
     {
       "name": "NAME OF IMAGE",
-      "url": "URL OF IMAGE or PATH TO IMAGE"
+      "path": "URL OF IMAGE or PATH TO IMAGE"
     }
   ]
 }
 ```
 
+### 🖼️ Preparing images
+
+1. Create a folder called `assets` or whatever you want in the [src](./src/) folder.
+2. Add your images to the folder.
+3. Add the images path to the `config.json` file.
+
 ### 🚀 Starting
 
-### 🐳 Docker
+#### 🐳 Docker
 
 ```bash
 docker compose up -d
 ```
 
-### 🖥️ Local
+#### 🖥️ Local
 
 ```bash
 pnpm start
+```
+
+### 📝 Post Image
+
+You can `POST` images to the `/image` endpoint.
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"image": "IMAGE URL", "imageName": "IMAGE NAME"}' http://localhost:3000/image
 ```
 
 ## 📝 License

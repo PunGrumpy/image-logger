@@ -37,7 +37,7 @@ Create a `config.json` you can use the `config.example.json` as a template.
     },
     {
       "name": "NAME OF IMAGE",
-      "path": "URL OF IMAGE
+      "path": "URL OF IMAGE"
     }
   ]
 }

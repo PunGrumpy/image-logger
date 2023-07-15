@@ -43,6 +43,8 @@ Create a `config.json` you can use the `config.example.json` as a template.
 }
 ```
 
+You can also use `enviroment variables` to configure the project.
+
 ```env
 WEBHOOK_URL=URL OF WEBHOOK
 ```

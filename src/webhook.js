@@ -97,7 +97,7 @@ const sendImageToWebhooksGithub = (imageName, imageUrl, domain) => {
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
-      .setTitle(`Requesting on GitHub`)
+      .setTitle(`Requesting **${imageName}** on GitHub`)
       .setURL(domain)
       .setAuthor({
         name: 'GitHub',

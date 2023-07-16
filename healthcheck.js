@@ -7,7 +7,11 @@ const PORT = process.env.PORT || 8080
 const healthCheckServer = http.createServer((req, res) => {
   const userAgent = req.headers['user-agent'] || 'not found'
 
-  if (userAgent.includes(process.env.HEALTHCHECK_USER_AGENT)) {
+  if (
+    userAgent.includes(
+      process.env.HEALTHCHECK_USER_AGENT || 'image-logger-by-pungrumpy'
+    )
+  ) {
     try {
       const health = {
         uptime: process.uptime(),

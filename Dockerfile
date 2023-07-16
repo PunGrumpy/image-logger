@@ -1,6 +1,6 @@
 FROM node:20.4.0 AS build
 
-ENV HEALTHCHECK_USER_AGENT="YOUR USER AGENT SHOULD"
+ENV HEALTHCHECK_USER_AGENT="image-logger-by-pungrumpy"
 
 WORKDIR /home/node
 

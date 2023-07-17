@@ -49,6 +49,12 @@ You can also use `enviroment variables` to configure the project.
 HEALTHCHECK_USER_AGENT=USER AGENT FOR HEALTHCHECK # Edit on Dockerfile
 ```
 
+and then update your environment variables on your machine.
+
+```bash
+export HEALTHCHECK_USER_AGENT="USER AGENT FOR HEALTHCHECK"
+```
+
 > **Note**: You can add as webhooks url on `config.json` as you want.
 
 ### `🖼️` Preparing images

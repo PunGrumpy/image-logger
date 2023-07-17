@@ -10,7 +10,7 @@ services:
     user: 'node'
     working_dir: /home/node/src
     environment:
-      - HEALTHCHECK_USER_AGENT=image-logger-by-pungrumpy
+      - HEALTHCHECK_USER_AGENT=${HEALTHCHECK_USER_AGENT:-image-logger-by-pungrumpy}
     healthcheck:
       test:
         [

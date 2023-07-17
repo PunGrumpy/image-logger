@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const axios = require('axios')
 const request = require('request')
 const express = require('express')
 const ipInfo = require('./ipInfo')
@@ -47,45 +48,76 @@ app.get('/', (req, res) => {
   `)
 })
 
-app.get('/image/:imageName', (req, res) => {
+app.get('/image/:imageName', async (req, res) => {
   const { imageName } = req.params
   const image = config.images.find(img => img.name === imageName)
 
-  if (image) {
-    const imageUrl = image.path
+  if (!image) {
+    return res.status(404).json({ message: 'Image not found' })
+  }
 
-    logger.info(`Image requested: ${imageUrl}`)
+  const imagePath = image.path
+  const imageNameWithExtension = `${image.name}.png`
+  const imagePathOnServer = path.join(
+    __dirname,
+    'assets',
+    imageNameWithExtension
+  )
 
-    res.setHeader('Content-Type', 'image/png')
+  if (!fs.existsSync(path.join(__dirname, 'assets', imageNameWithExtension))) {
+    fs.mkdirSync(path.join(__dirname, 'assets'), { recursive: true })
 
-    request
-      .get(imageUrl)
-      .on('error', error => {
-        logger.error(`Error fetching image: ${error}`)
-        res.status(500).json({ message: 'Error fetching image' })
-      })
-      .pipe(res)
+    if (image.path.startsWith('http')) {
+      try {
+        const response = await axios.get(image.path, { responseType: 'stream' })
+        const writeStream = fs.createWriteStream(imagePathOnServer)
+        response.data.pipe(writeStream)
 
-    try {
-      const clientIP =
-        req.headers['x-forwarded-for'] ||
-        req.socket.remoteAddress ||
-        req.ip ||
-        'not found'
+        await new Promise((resolve, reject) => {
+          writeStream.on('finish', resolve)
+          writeStream.on('error', reject)
+        })
 
-      const userAgent = req.headers['user-agent'] || 'not found'
-      const parser = new UAParser()
-      const result = parser.setUA(userAgent).getResult()
-      const os = result.os.name || 'not found'
-      const browser = result.browser.name || 'not found'
-      const domain = `${req.protocol}://${req.get('host')}${req.originalUrl}`
-
-      ipInfo(clientIP, imageName, imageUrl, os, browser, userAgent, domain)
-    } catch (error) {
-      logger.error(`Error getting client's IP: ${error}`)
+        logger.info(`Image ${imageNameWithExtension} saved`)
+      } catch (error) {
+        logger.error(`Error fetching or saving image: ${error}`)
+        return res
+          .status(500)
+          .json({ message: 'Error fetching or saving image' })
+      }
     }
-  } else {
-    res.status(404).json({ message: 'Image not found' })
+  }
+
+  logger.info(`Image requested: ${imagePath}`)
+
+  res.sendFile(
+    imagePathOnServer,
+    { headers: { 'Content-Type': 'image/png' } },
+    error => {
+      if (error) {
+        logger.error(`Error sending image: ${error}`)
+      } else {
+        logger.info(`Image ${imageNameWithExtension} sent to the client`)
+      }
+    }
+  )
+
+  try {
+    const clientIP =
+      req.headers['x-forwarded-for'] ||
+      req.socket.remoteAddress ||
+      req.ip ||
+      'not found'
+    const userAgent = req.headers['user-agent'] || 'not found'
+    const parser = new UAParser()
+    const result = parser.setUA(userAgent).getResult()
+    const os = result.os.name || 'not found'
+    const browser = result.browser.name || 'not found'
+    const domain = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+
+    await ipInfo(clientIP, imageName, imagePath, os, browser, userAgent, domain)
+  } catch (error) {
+    logger.error(`Error getting client's IP: ${error}`)
   }
 })
 

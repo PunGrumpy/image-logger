@@ -46,6 +46,8 @@ app.get('/', (req, res) => {
       </body>
     </html>
   `)
+
+  logger.info(`Client requested root path: ${req.originalUrl}`)
 })
 
 app.get('/img/:imageName', async (req, res) => {

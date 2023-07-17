@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
   `)
 })
 
-app.get('/image/:imageName', async (req, res) => {
+app.get('/img/:imageName', async (req, res) => {
   const { imageName } = req.params
   const image = config.images.find(img => img.name === imageName)
 

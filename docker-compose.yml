@@ -7,6 +7,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    user: 'node'
+    working_dir: /home/node/src
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - ./src/index.js:/home/node/src/index.js
       - ./src/ipInfo.js:/home/node/src/ipInfo.js
@@ -15,4 +22,3 @@ services:
       - ./src/webhook.js:/home/node/src/webhook.js
       - ./src/config.json:/home/node/src/config.js
       - ./src/assets:/home/node/src/assets
-      - ./healthcheck.js:/home/node/healthcheck.js

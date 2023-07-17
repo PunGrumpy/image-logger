@@ -150,4 +150,40 @@ app.post('/image', (req, res) => {
   }
 })
 
+app.get('/health', (req, res) => {
+  const userAgent = req.headers['user-agent'] || 'not found'
+
+  if (
+    userAgent.includes(
+      process.env.HEALTHCHECK_USER_AGENT || 'image-logger-by-pungrumpy'
+    )
+  ) {
+    try {
+      const health = {
+        uptime: process.uptime(),
+        message: 'OK',
+        timestamp: Date.now(),
+        status: 200
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify(health))
+
+      logger.info(
+        `Health check response: ${JSON.stringify(
+          health
+        )} with user agent: ${userAgent}`
+      )
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Internal Server Error'
+      res.writeHead(503, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ message: errorMessage }))
+    }
+  } else {
+    res.writeHead(503, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ message: 'Service Unavailable' }))
+  }
+})
+
 module.exports = app

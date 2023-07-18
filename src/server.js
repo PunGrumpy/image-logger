@@ -59,7 +59,7 @@ app.get('/img/:imageName', async (req, res) => {
   }
 
   const imagePath = image.path
-  const imageNameWithExtension = `${image.name}.png`
+  const imageNameWithExtension = `${image.name}.${image.path.split('.').pop()}`
   const imagePathOnServer = path.join(
     __dirname,
     'assets',

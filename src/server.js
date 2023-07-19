@@ -55,7 +55,7 @@ app.get('/', (req, res) => {
 
 app.get('/fileToSend', (req, res) => {
   try {
-    const fileToSendPath = path.join(__dirname, 'assets', 'file.*')
+    const fileToSendPath = path.join(__dirname, 'assets', 'file.txt')
 
     fs.readFile(fileToSendPath, (err, data) => {
       if (err) {

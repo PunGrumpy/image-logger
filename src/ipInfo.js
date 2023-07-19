@@ -3,7 +3,7 @@ const { sendImageToWebhooks, sendImageToWebhooksGithub } = require('./webhook')
 
 const ipInfo = async (
   clientIP,
-  imageName,
+  imageNameWithExtension,
   imagePath,
   os,
   browser,
@@ -48,7 +48,7 @@ const ipInfo = async (
         !userAgent.includes('github.com')
       ) {
         sendImageToWebhooks(
-          imageName,
+          imageNameWithExtension,
           imagePath,
           clientIP,
           timezone,
@@ -68,7 +68,7 @@ const ipInfo = async (
           domain
         )
       } else {
-        sendImageToWebhooksGithub(imageName, imagePath, domain)
+        sendImageToWebhooksGithub(imageNameWithExtension, imagePath, domain)
       }
     } catch (error) {
       logger.error(`Error getting client's information: ${error}`)

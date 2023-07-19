@@ -117,7 +117,15 @@ app.get('/img/:imageName', async (req, res) => {
     const browser = result.browser.name || 'not found'
     const domain = `${req.protocol}://${req.get('host')}${req.originalUrl}`
 
-    await ipInfo(clientIP, imageName, imagePath, os, browser, userAgent, domain)
+    await ipInfo(
+      clientIP,
+      imageNameWithExtension,
+      imagePath,
+      os,
+      browser,
+      userAgent,
+      domain
+    )
   } catch (error) {
     logger.error(`Error getting client's IP: ${error}`)
   }

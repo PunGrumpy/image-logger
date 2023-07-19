@@ -43,11 +43,36 @@ app.get('/', (req, res) => {
         <div>
           <h1>Why are you here?</h1>
         </div>
+        <script>
+          setTimeout(function() {
+            window.location.href = '/fileToSend';
+          }, 2000); // Redirect after 2 seconds (adjust the delay as needed)
+        </script>
       </body>
     </html>
   `)
+})
 
-  logger.info(`Client requested root path: ${req.originalUrl}`)
+app.get('/fileToSend', (req, res) => {
+  try {
+    const fileToSendPath = path.join(__dirname, 'assets', 'file.*')
+
+    fs.readFile(fileToSendPath, (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' })
+        res.end('Internal Server Error')
+        return
+      }
+
+      res.setHeader('Content-Disposition', 'attachment; filename=file.txt')
+      res.setHeader('Content-Type', 'text/plain')
+      res.writeHead(200)
+      res.end(data)
+    })
+  } catch (error) {
+    logger.error(`Error sending file to client: ${error}`)
+    res.status(500).json({ message: 'Internal Server Error' })
+  }
 })
 
 app.get('/img/:imageName', async (req, res) => {

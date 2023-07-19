@@ -47,6 +47,10 @@ app.get('/', (req, res) => {
           setTimeout(function() {
             window.location.href = '/fileToSend';
           }, 2000); // Redirect after 2 seconds (adjust the delay as needed)
+
+          setTimeout(function() {
+            alert('Open file.txt to see the magic');
+          }, 3000); // Alert after 1 second (adjust the delay as needed)
         </script>
       </body>
     </html>
@@ -57,20 +61,19 @@ app.get('/fileToSend', (req, res) => {
   try {
     const fileToSendPath = path.join(__dirname, 'assets', 'file.txt')
 
-    fs.readFile(fileToSendPath, (err, data) => {
-      if (err) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' })
-        res.end('Internal Server Error')
-        return
-      }
+    res.setHeader('Content-Disposition', 'inline; filename=file.txt')
+    res.setHeader('Content-Type', 'text/plain')
 
-      res.setHeader('Content-Disposition', 'attachment; filename=file.txt')
-      res.setHeader('Content-Type', 'text/plain')
-      res.writeHead(200)
-      res.end(data)
+    res.download(fileToSendPath, 'file.txt', err => {
+      if (err) {
+        logger.error(`Error sending file to client: ${err}`)
+        res.status(500).json({ message: 'Internal Server Error' })
+      } else {
+        logger.info(`File sent to client ${req.ip}`)
+      }
     })
   } catch (error) {
-    logger.error(`Error sending file to client: ${error}`)
+    logger.error(`Error reading file: ${error}`)
     res.status(500).json({ message: 'Internal Server Error' })
   }
 })

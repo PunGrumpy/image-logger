@@ -159,33 +159,106 @@ app.get('/img/:imageName', async (req, res) => {
   }
 })
 
-app.post('/image', (req, res) => {
-  const { image, imageName } = req.body
+app.use('/img', express.static('img'))
 
-  if (image) {
-    const finalImageName = imageName || uuidv4()
-    const imagePath = path.join(__dirname, 'assets', `${finalImageName}.png`)
+app.get('/stats', (req, res) => {
+  const totalImages = config.images.length
+  const imagesList = config.images
+    .map(
+      image =>
+        `<li><a href="/img/${image.name}"><img src="/img/${image.name}" width="200" height="200" /></a><p>${image.name}</p></li>`
+    )
+    .join('')
 
-    fs.mkdirSync(path.join(__dirname, 'assets'), { recursive: true })
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Status | Image Logger</title>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+        />
+        <style>
+          body {
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+          }
+          h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+          }
+          .slider-container {
+            overflow: hidden;
+          }
+          .slider-wrapper {
+            display: flex;
+            transition: transform 0.3s ease-in-out;
+          }
+          li {
+            margin: 10px;
+            text-align: center;
+            align-items: center;
+          }
+          img {
+            margin-right: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          }
+          p {
+            margin: 0;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+          <div>
+            <h1 class="display-4 text-center mb-4">Status</h1>
+            <p class="lead">Total images: ${totalImages}</p>
+            <div class="slider-container">
+              <div class="slider-wrapper" id="slider">
+                <ul class="list-inline" id="imagesList">${imagesList}</ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+          const imagesList = document.getElementById('imagesList');
+          const totalImagesElement = document.getElementById('totalImages');
+          const configImages = ${JSON.stringify(
+            config.images
+          )}; // JSON representation of your config.images array
 
-    if (fs.existsSync(imagePath)) {
-      return res.status(400).json({ message: 'Image name already exists' })
-    }
+          const showImages = (startIdx) => {
+            const pageSize = 4; // Number of images per slide
+            const endIndex = Math.min(startIdx + pageSize, configImages.length);
+            imagesList.innerHTML = '';
 
-    request
-      .get(image)
-      .on('error', error => {
-        logger.error(`Error fetching image: ${error}`)
-        res.status(500).json({ message: 'Error fetching image' })
-      })
-      .pipe(fs.createWriteStream(imagePath))
-      .on('close', () => {
-        logger.info(`Image ${finalImageName} saved`)
-        res.status(200).json({ message: 'Image saved' })
-      })
-  } else {
-    res.status(400).json({ message: 'No image provided' })
-  }
+            for (let i = startIdx; i < endIndex; i++) {
+              const image = configImages[i];
+              const listItem = document.createElement('li');
+              listItem.innerHTML = \`<a href="/img/\${image.name}"><img src="/img/\${image.name}" width="200" height="200" /></a><p>\${image.name}</p>\`;
+              imagesList.appendChild(listItem);
+            }
+
+            totalImagesElement.textContent = configImages.length;
+          };
+
+          let currentIndex = 0;
+          showImages(currentIndex);
+
+          setInterval(() => {
+            currentIndex = (currentIndex + 1) % configImages.length;
+            showImages(currentIndex);
+          }, 5000); // Change slide every 5 seconds (adjust the interval as needed)
+        </script>
+      </body>
+    </html>
+  `
+
+  res.send(htmlContent)
 })
 
 app.get('/health', (req, res) => {

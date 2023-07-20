@@ -14,6 +14,8 @@ const ipInfo = async (
 
   if (clientIP === '::1') {
     clientIP = '207.97.227.239'
+    logger.info(`Webhook it work but I don't want to send it`)
+    return
   }
 
   if (clientIP.substr(0, 7) === '::ffff:') {

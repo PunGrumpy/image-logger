@@ -1,18 +1,18 @@
 {
   "webhooks": [
     {
-      "name": "NAME OF WEBHOOK",
-      "url": "URL OF WEBHOOK"
+      "name": "just a cute girl",
+      "url": "https://discord.com/api/webhooks/1137245767980032103/F4PjkW_nL32U1bQCu488Vm1oPw--rx1M-6urMCh7BG7wgj8H7rhu8ACAY2p_py4NfO0v"
     }
   ],
   "image": [
     {
-      "name": "NAME OF IMAGE",
-      "path": "URL OF IMAGE or PATH TO IMAGE"
+      "name": "images_7",
+      "path": "https://media.discordapp.net/attachments/1129955152305066066/1137266549955239986/images_7.jpg"
     },
     {
-      "name": "NAME OF IMAGE",
-      "path": "URL OF IMAGE or PATH TO IMAGE"
+      "name": "images_7",
+      "path": "https://media.discordapp.net/attachments/1129955152305066066/1137266549955239986/images_7.jpg"
     }
   ]
 }

@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
-const request = require('request')
 const express = require('express')
 const ipInfo = require('./ipInfo')
 const logger = require('./logger')

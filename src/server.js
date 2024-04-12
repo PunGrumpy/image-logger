@@ -13,6 +13,8 @@ const config = require('./config.json')
 
 const app = express()
 app.enable('trust proxy')
+
+// Middleware
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -295,6 +297,11 @@ app.get('/health', (req, res) => {
     res.writeHead(503, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ message: 'Service Unavailable' }))
   }
+})
+
+app.use((err, req, res, next) => {
+  logger.error(`An error occurred: ${err.stack}`)
+  res.status(500).json({ message: 'Internal Server Error' })
 })
 
 module.exports = app
